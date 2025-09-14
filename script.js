@@ -327,20 +327,31 @@ function getForecastData(lat, lon, currentWeatherData) {
 }
 
 function getTimezoneForLocation(lat, lon, currentWeatherData, forecastData) {
-  // Use a more accurate timezone lookup
+  console.log("Getting timezone for coordinates:", lat, lon);
+
+  // Use a more reliable timezone lookup service
   fetch(
-    `https://api.timezonedb.com/v2.1/get-time-zone?key=free&format=json&by=position&lat=${lat}&lng=${lon}`
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
   )
-    .then((res) => res.json())
-    .then((timezoneData) => {
-      console.log("Timezone data:", timezoneData);
+    .then((res) => {
+      console.log("Geocoding API response status:", res.status);
+      return res.json();
+    })
+    .then((geoData) => {
+      console.log("Geocoding API response:", geoData);
 
       let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log("Browser timezone:", timezone);
 
-      if (timezoneData.status === "OK" && timezoneData.zoneName) {
-        timezone = timezoneData.zoneName;
+      // Try to get timezone from the geocoding data
+      if (geoData && geoData.timezone) {
+        timezone = geoData.timezone;
+        console.log("Using geocoding timezone:", timezone);
       } else {
         // Fallback: estimate timezone based on longitude
+        console.log(
+          "No timezone in geocoding data, using longitude estimation"
+        );
         timezone = estimateTimezoneFromLongitude(lon);
       }
 
@@ -356,6 +367,7 @@ function getTimezoneForLocation(lat, lon, currentWeatherData, forecastData) {
     .catch((error) => {
       console.error("Error fetching timezone:", error);
       // Fallback to estimated timezone
+      console.log("API error, using longitude estimation");
       const timezone = estimateTimezoneFromLongitude(lon);
       const combinedData = {
         current: currentWeatherData,
@@ -375,8 +387,8 @@ function estimateTimezoneFromLongitude(lon) {
     { min: -135, max: -120, zone: "America/Los_Angeles" },
     { min: -120, max: -105, zone: "America/Denver" },
     { min: -105, max: -90, zone: "America/Chicago" },
-    { min: -90, max: -75, zone: "America/New_York" },
-    { min: -75, max: -60, zone: "America/Caracas" },
+    { min: -90, max: -75, zone: "America/Chicago" }, // Fixed: Tennessee is Central Time
+    { min: -75, max: -60, zone: "America/New_York" },
     { min: -60, max: -45, zone: "America/Argentina/Buenos_Aires" },
     { min: -45, max: -30, zone: "Atlantic/South_Georgia" },
     { min: -30, max: -15, zone: "Atlantic/Azores" },
@@ -394,12 +406,23 @@ function estimateTimezoneFromLongitude(lon) {
     { min: 150, max: 180, zone: "Pacific/Auckland" },
   ];
 
+  console.log("Estimating timezone for longitude:", lon);
+
   for (const tz of timezoneMap) {
     if (lon >= tz.min && lon < tz.max) {
+      console.log(
+        "Found timezone:",
+        tz.zone,
+        "for longitude range",
+        tz.min,
+        "to",
+        tz.max
+      );
       return tz.zone;
     }
   }
 
+  console.log("No timezone found, using UTC");
   return "UTC";
 }
 
