@@ -28,21 +28,26 @@ body {
 
 .date-container {
   font-weight: 100;
+  background: rgba(24, 24, 27, 0.6);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid whitesmoke;
 }
 
 .date-container .time {
   font-size: 70px;
   font-weight: 200;
+  line-height: 1;
 }
 
 .date-container #am-pm {
   font-size: 30px;
-  margin-left: 20px;
   font-weight: 400;
+  margin-left: 5px;
 }
 
 .date-container .date {
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 300;
 }
 
@@ -171,11 +176,7 @@ body {
 .current-info .others {
   display: flex;
   flex-direction: column;
-  background: rgba(24, 24, 27, 0.6);
-  padding: 20px;
-  border-radius: 10px;
-  margin: 10px 0;
-  border: 1px solid whitesmoke;
+  align-items: flex-start;
 }
 
 .current-info .others .weather-item {
@@ -184,7 +185,41 @@ body {
 }
 
 .others {
-  width: 250px;
+  width: auto;
+  min-width: 200px;
+}
+
+.temp-display {
+  font-size: 48px;
+  color: white;
+  font-weight: 350;
+}
+
+.degree {
+  font-size: 32px;
+  vertical-align: 0.4em;
+}
+
+.condition-display {
+  font-size: 20px;
+  font-weight: 300;
+  color: white;
+  opacity: 0.9;
+  margin-left: 10px;
+}
+
+.temp-condition-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.city-display {
+  font-size: 27px;
+  font-weight: 300;
+  color: white;
+  opacity: 0.8;
 }
 .future-forecast {
   background: rgba(24, 24, 27, 0.8);
